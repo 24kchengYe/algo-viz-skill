@@ -236,9 +236,85 @@ self.add_subcaption("This is the core of attention", duration=2)
 | `dim_rect(w, h)` | 暗色结构框 |
 | `styled_title/subtitle/body/label/small/formula` | 文字工厂 |
 
+### 高级动画方法 (StyledScene)
+
+| 方法 | 效果 | 适用 |
+|------|------|------|
+| `bounce_in(mob)` | ease_out_back 弹性入场 | 标题/重要元素出场 |
+| `snap_in(mob)` | 0.3x→1x 缩放弹入 | 结论/结果弹出 |
+| `arc_move(mob, pos)` | 弧形移动 (path_arc) | 交换/转移 |
+| `morph(src, tgt)` | ReplacementTransform+弧线 | 公式变形 |
+| `wave_highlight(group)` | 逐个 Indicate 波浪 | 强调一组元素 |
+| `typewriter(text)` | 打字机效果 | 代码/终端文字 |
+| `focus_then_restore(mob)` | zoom in→停留→zoom out | 聚焦关键细节 |
+
+### 高级缓动预设
+
+| 预设 | 效果 | 用法 |
+|------|------|------|
+| `EASE_SPRING` | 弹簧感(超调回弹) | `rate_func=EASE_SPRING` |
+| `EASE_SNAP` | 快速卡入 | `rate_func=EASE_SNAP` |
+| `EASE_GENTLE` | 极柔和 | `rate_func=EASE_GENTLE` |
+| `ease_out_back` | Manim 内置弹性 | `rate_func=ease_out_back` |
+| `ease_out_bounce` | 弹跳落地 | `rate_func=ease_out_bounce` |
+| `there_and_back` | 去了又回来 | 临时强调 |
+
+### 创建动画选用指南
+
+| 元素 | 动画 | 不要用 |
+|------|------|--------|
+| 文字/公式 | `Write(text)` | `Create` (太慢) |
+| 几何形状 | `Create(shape)` 或 `DrawBorderThenFill(shape)` | `FadeIn` (太平) |
+| 快速引入 | `FadeIn(mob, shift=UP)` | 无方向的 `FadeIn` |
+| 弹性出场 | `GrowFromCenter(mob)` 或 `bounce_in` | |
+| 退出 | 和入场匹配: Create↔Uncreate, FadeIn↔FadeOut | |
+
+### 视觉增强技巧 (来自 manimce-best-practices)
+
+**连接线:**
+```python
+CurvedArrow(start, end, angle=PI/2)   # 弧形箭头 (比直线更有流动感)
+DashedLine(start, end, dash_length=0.2) # 虚线 (辅助/参考线)
+Brace(mob, DOWN); brace.get_text("Width") # 大括号标注尺寸
+always_redraw(lambda: Line(a.get_center(), b.get_center())) # 动态连线
+```
+
+**文字强调:**
+```python
+Circumscribe(mob, color=YELLOW)         # 画圈强调
+Indicate(mob, scale_factor=1.2)          # 脉冲强调
+AddTextLetterByLetter(text, time_per_char=0.05) # 打字机
+BackgroundRectangle(text, fill_opacity=0.8, buff=0.1) # 文字背景框
+```
+
+**函数图/数据可视化:**
+```python
+graph = axes.plot(lambda x: x**2, color=BLUE)
+axes.get_graph_label(graph, MathTex("y=x^2"), x_val=2, direction=UR)
+axes.get_area(graph, x_range=[0,2], color=BLUE, opacity=0.3) # 曲线下面积
+x_tracker = ValueTracker(0)
+dot = always_redraw(lambda: Dot(axes.i2gp(x_tracker.get_value(), graph)))
+self.play(x_tracker.animate.set_value(5), run_time=3) # 沿曲线跟踪点
+```
+
+**公式变形:**
+```python
+TransformMatchingTex(eq1, eq2)           # 公式过渡 (匹配相同部分)
+TransformMatchingShapes(source, target)  # 形状匹配变形
+```
+
+### 渲染后自检
+
+渲染完成后自动抽取 6 帧 PNG 到 `_frames/` 目录。写场景后应:
+1. 渲染 (`-ql` 快速预览)
+2. 用 Read 工具查看 `_frames/*.png` 检查布局
+3. 发现问题 → 改对应 scene → 只重渲该 scene
+4. 确认无误 → 渲染 `-qm` 正式版
+
 ## 注意事项
 
 - Windows: `python`, 不是 `python3`
 - 中文: `styled_*()` 自动限宽
 - LaTeX 报错: 检查是否有中文在 `\text{}` 里
 - 分场景渲染失败: 只重渲失败的 scene
+- 详细 Manim API 规则: 参考 `manimce-best-practices` skill 的 21 个规则文件
