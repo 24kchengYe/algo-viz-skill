@@ -311,10 +311,50 @@ TransformMatchingShapes(source, target)  # 形状匹配变形
 3. 发现问题 → 改对应 scene → 只重渲该 scene
 4. 确认无误 → 渲染 `-qm` 正式版
 
+## 已知陷阱 (踩坑经验)
+
+### API 兼容
+
+- `ease_out_back`, `ease_out_bounce` 等 CSS 风格缓动在 ManimCE 0.20 **不存在**。用 `smooth`、`there_and_back`、`rush_from`，或自定义 `make_bezier_rate_func()`
+- `AddTextLetterByLetter` 只能用于 `Text` 对象，**不能用于 `MathTex`**
+- 中文不能放在 LaTeX 的 `\text{}` 里（LaTeX 不支持 CJK），用单独的 `Text()` 放在旁边
+
+### 布局定位
+
+- **公式不要用 `to_edge(UP)`** — 会和标题重叠。用 `next_to(title, DOWN, buff=0.5)` 相对定位
+- **图例先定位再出现** — 不要先 FadeIn 到错误位置再 `animate.to_corner`，应该创建时直接 `to_corner(UR)` 再 FadeIn
+- **图例加 BackgroundRectangle** — 否则和曲线/网格重叠时看不清
+- **角度/距离标签不要堆在原点** — 用 `next_to(arc 中点, 外向方向)` 分散放置，或沿半径方向偏移
+
+### 相机运动
+
+- **zoom in 前先 FadeOut step 标签** — 否则标签被裁掉
+- **zoom out 后再显示全局信息** — 如右侧面板、底部总结
+- **zoom 用 `save_state()` + `Restore()`** — 不要手动 `.scale(1/0.7)` 回去
+
+### 场景过渡
+
+- **不要用全黑空帧过渡** — 内容清完后立即开始下一段，用 `FadeOut(VGroup(...))` 一次性淡出
+- **退出动画匹配入场** — `Create` 配 `Uncreate`，`FadeIn` 配 `FadeOut`，`GrowFromCenter` 配 `ShrinkToCenter`
+
+### 帧自检流程 (铁律)
+
+每次渲染完**必须**抽帧检查：
+1. `--stitch` 自动抽 8 帧到 `_frames/`
+2. 用 Read 逐帧检查：有没有重叠？溢出？空帧？颜色对不对？
+3. 发现问题 → 只改对应 Scene 的代码
+4. 只重渲该 Scene → 重新 ffmpeg 拼接
+5. 再次抽帧确认修复
+
+```bash
+# 只重渲 Scene3
+python -m manim render -qm script.py Scene3_RoPERotation
+# 重新拼接
+ffmpeg -y -f concat -safe 0 -i concat.txt -c copy final.mp4
+```
+
 ## 注意事项
 
 - Windows: `python`, 不是 `python3`
 - 中文: `styled_*()` 自动限宽
-- LaTeX 报错: 检查是否有中文在 `\text{}` 里
-- 分场景渲染失败: 只重渲失败的 scene
-- 详细 Manim API 规则: 参考 `manimce-best-practices` skill 的 21 个规则文件
+- 详细 Manim API: 参考 `manimce-best-practices` skill 的 21 个规则文件
