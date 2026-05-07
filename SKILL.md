@@ -1,5 +1,5 @@
 ---
-name: algo-viz
+name: note2video
 description: "Generate 3Blue1Brown-style algorithm and tech learning animation videos using Manim. Supports preset scenes (sorting, graph, DL, math) with Chinese aliases, and custom multi-scene video projects with plan→code→render→stitch workflow. Use when user asks to visualize, animate, or explain algorithms/concepts with video."
 args:
   - name: topic
@@ -14,9 +14,9 @@ args:
 user-invokable: true
 ---
 
-# algo-viz: 算法与技术学习动画生成器
+# note2video: 算法与技术学习动画生成器
 
-工具位于 `D:/pythonPycharms/My_jupyerlab/tools/algo-viz/`。
+工具位于 `D:/pythonPycharms/My_jupyerlab/tools/note2video/`。
 
 ## 三种模式
 
@@ -25,9 +25,9 @@ user-invokable: true
 匹配预制场景，一条命令出视频：
 
 ```bash
-python "D:/pythonPycharms/My_jupyerlab/tools/algo-viz/generate.py" "快速排序" -q m
-python "D:/pythonPycharms/My_jupyerlab/tools/algo-viz/generate.py" --scene attention -q m
-python "D:/pythonPycharms/My_jupyerlab/tools/algo-viz/generate.py" --list  # 查看所有预制场景
+python "D:/pythonPycharms/My_jupyerlab/tools/note2video/generate.py" "快速排序" -q m
+python "D:/pythonPycharms/My_jupyerlab/tools/note2video/generate.py" --scene attention -q m
+python "D:/pythonPycharms/My_jupyerlab/tools/note2video/generate.py" --list  # 查看所有预制场景
 ```
 
 ### 模式 B: 自定义多场景项目（Claude 手写）
@@ -40,7 +40,7 @@ python "D:/pythonPycharms/My_jupyerlab/tools/algo-viz/generate.py" --list  # 查
 
 ```bash
 # 基本用法
-python "D:/pythonPycharms/My_jupyerlab/tools/algo-viz/api_generate.py" path/to/笔记.md
+python "D:/pythonPycharms/My_jupyerlab/tools/note2video/api_generate.py" path/to/笔记.md
 
 # 指定模型和质量
 python api_generate.py path/to/笔记.md -q m --model qwen/qwen3-235b-a22b
@@ -67,7 +67,7 @@ python api_generate.py path/to/笔记.md --platform ablai --model gpt-4o
 在项目目录下写 `plan.md`：
 
 ```bash
-mkdir -p "D:/pythonPycharms/My_jupyerlab/tools/algo-viz/output/<project-name>"
+mkdir -p "D:/pythonPycharms/My_jupyerlab/tools/note2video/output/<project-name>"
 ```
 
 ```markdown
@@ -112,7 +112,7 @@ mkdir -p "D:/pythonPycharms/My_jupyerlab/tools/algo-viz/output/<project-name>"
 ```python
 from manim import *
 import sys, os
-sys.path.insert(0, r"D:\pythonPycharms\My_jupyerlab\tools\algo-viz")
+sys.path.insert(0, r"D:\pythonPycharms\My_jupyerlab\tools\note2video")
 from scenes.style import *  # 导入组件库
 
 class Scene1_Introduction(StyledScene):
@@ -134,7 +134,7 @@ class Scene2_CoreConcept(StyledScene):
 用 generate.py 的 `--stitch` 模式一键完成：
 
 ```bash
-python "D:/pythonPycharms/My_jupyerlab/tools/algo-viz/generate.py" --stitch "output/<project>/script.py" -q m
+python "D:/pythonPycharms/My_jupyerlab/tools/note2video/generate.py" --stitch "output/<project>/script.py" -q m
 ```
 
 这会：
