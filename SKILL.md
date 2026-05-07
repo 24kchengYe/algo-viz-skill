@@ -166,6 +166,8 @@ python -m manim render -qm script.py Scene2_CoreConcept  # 只渲染改过的
 
 ## 审美规范 (写新场景时必须遵守)
 
+**完整规范在 `prompts/system.md` 中**（三种模式共用同一份）。以下是速查摘要：
+
 ### 基类
 
 ```python
