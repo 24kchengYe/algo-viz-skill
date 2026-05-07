@@ -18,7 +18,7 @@ user-invokable: true
 
 工具位于 `D:/pythonPycharms/My_jupyerlab/tools/algo-viz/`。
 
-## 两种模式
+## 三种模式
 
 ### 模式 A: 预制场景（快速）
 
@@ -30,9 +30,33 @@ python "D:/pythonPycharms/My_jupyerlab/tools/algo-viz/generate.py" --scene atten
 python "D:/pythonPycharms/My_jupyerlab/tools/algo-viz/generate.py" --list  # 查看所有预制场景
 ```
 
-### 模式 B: 自定义多场景项目（完整）
+### 模式 B: 自定义多场景项目（Claude 手写）
 
-用户给一个主题或 MD 文件，走 **Plan → Code → Render → Stitch → Iterate** 流程。
+用户给一个主题或 MD 文件，Claude 走 **Plan → Code → Render → Stitch → Iterate** 流程。
+
+### 模式 C: API 自动生成（无需 Claude Code）
+
+给 MD 文件路径，自动调 LLM API 生成 Manim 代码并渲染。可被 VS Code 插件、Shell 脚本调用。
+
+```bash
+# 基本用法
+python "D:/pythonPycharms/My_jupyerlab/tools/algo-viz/api_generate.py" path/to/笔记.md
+
+# 指定模型和质量
+python api_generate.py path/to/笔记.md -q m --model qwen/qwen3-235b-a22b
+
+# 只生成代码不渲染 (调试用)
+python api_generate.py path/to/笔记.md --dry-run
+
+# 用 ablai 平台 (国内直连)
+python api_generate.py path/to/笔记.md --platform ablai --model gpt-4o
+```
+
+**配置**: 复制 `.env.example` 为 `.env`，填入 API key。
+
+**流程**: 读取 MD → 调 LLM 生成 script.py → render_stitch 渲染 + 拼接 → 抽帧自检 → final.mp4
+
+**支持平台**: OpenRouter (推荐, qwen3.5), MindCraft (gpt-4o), ablai (国内中转)
 
 ---
 
